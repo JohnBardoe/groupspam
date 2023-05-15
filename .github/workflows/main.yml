@@ -9,7 +9,7 @@ on:
 
 jobs:
   execute:
-    timeout-minutes: 1 #this should be enough to start, the bot itself detaches afterwards
+    timeout-minutes: 3 
     runs-on:
       labels: self-hosted 
     steps:
