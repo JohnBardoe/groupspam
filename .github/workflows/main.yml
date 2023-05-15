@@ -14,9 +14,9 @@ jobs:
       labels: self-hosted 
     steps:
       - uses: actions/checkout@v2
+      
+      - name: apt install
+        run: apt install gcc -y
 
-      - name: Kill all running instances of the bot
-        run: docker-compose down
-
-      - name: Start the bot
+      - name: compose up
         run: docker-compose up --build -d
