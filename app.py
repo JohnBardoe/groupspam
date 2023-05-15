@@ -14,7 +14,7 @@ def upload_userlist():
     userlist = []
     file = request.files['file']
     if file:
-        return pprint.pformat(file)
+        return pprint.pformat(file.read())
 
 
 @app.route('/')
