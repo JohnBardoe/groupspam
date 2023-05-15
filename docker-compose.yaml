@@ -5,7 +5,8 @@ services:
     build:
       context: ./
       network: host
-    links: mongo
+    links:
+      - mongo
     ports:
       - '8000:5000'
     
