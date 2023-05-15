@@ -14,7 +14,9 @@ def upload_userlist():
     userlist = []
     file = request.files['file']
     if file:
-        return pprint.pformat(file.read())
+        string = file.read().decode('utf-8')
+        lines = string.split('\n')
+        return pprint.pformat(lines)
 
 
 @app.route('/')
