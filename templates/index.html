@@ -18,21 +18,22 @@
 	{% for group in groups %}
 	<!-- card fits content with inner padding of 20px -->
 	<div class="col">
-	<div class="card" id="{{ group }}">
+	<div class="card" id="{{ group['name'] }}">
 	    <div class="card-body text-center">
-	      <h5 class="card-title">{{ group }}</h5>
-	      <h6 class="card-subtitle mb-2 text-muted">Added: -- Failed: --</h6>
-	      <form action="/groupEdit" method="post">
+		<!-- selector for user list. has label 'User List' -->
+	        <h6 class="card-subtitle mb-2 text-muted">Added: -- Failed: --</h6>
+		<!-- textbox for group name with label 'Group Name' -->
+		<input type="text" class="form-control" id="group" name="group" rows="1" placeholder="{{ group['name'] }}"></input>
+		<select class="form-select" aria-label="User List">
+			{% for userlist in userlists %}
+			<option value="{{ userlist }}" {% if userlist == group['userlist'] %} selected {% endif %}>{{ userlist }}</option>
+			{% endfor %}
+		</select>
+	      <form action="/group_delete" method="post">
 		<input type="hidden" name="group" value="{{ group }}">
-		<input type="text" class="form-control" id="group" name="group" rows="1" placeholder="{{ group }}"></input>
-		<input type="file" class="form-control" id="file" name="file" rows="1" placeholder="Upload users .csv"></input>
-		<!-- stick row of two buttons to bottom of the card. one button is submit, the other is delete -->	
 		<div class="row mx-3 my-3">
 		  <div class="col">
-		    <button type="submit" class="btn btn-primary">Update</button>
-		  </div>
-		  <div class="col">
-		    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+		    <button type="button" class="btn btn-danger">Delete</button>
 		  </div>
 		</div>
 	      </form>
@@ -51,7 +52,13 @@
 	</div>
 	</div>
       </div>
-    </div>
+      </div>
+      <!-- big green start button. pineed to the bottom with some padding -->
+      <div class="card fixed-bottom mx-3 my-3">
+	<form action="/start" method="post" class="card-body">
+	<button type="submit" class="btn btn-success btn-lg btn-block">Start</button>
+	</form>
+      </div>
   </div>
   <!-- stick to the bottom of the screen and padding on the left and right of 15px -->
   <div class="row fixed-bottom mx-3 my-3">
@@ -62,7 +69,7 @@
 	<form action="/newgroup" method="post">
 	  <div class="mb-3">
 	    <label for="groupname" class="form-label">Group Name</label>
-	    <input type="text" class="form-control" id="groupname" name="groupname">
+	    <input type="text" cbreakslass="form-control" id="groupname" name="groupname">
 	  </div>
 	  <button type="submit" class="btn btn-primary">Submit</button>
 	</form>
@@ -88,9 +95,17 @@
       <div class="card">
 	<div class="card-body">
 	<h5 class="card-title">Upload Accounts</h5>
-	<!-- allow only zip files -->
 	<form action="/upload" method="post" enctype="multipart/form-data">
 	  <input type="file" name="file" id="file" accept=".zip,.rar,.7zip">
+	  <input type="submit" value="Upload" name="submit">
+	</form>
+	</div>
+      </div>
+      <div class="card">
+	<div class="card-body">
+	<h5 class="card-title">Upload user list</h5>
+	<form action="/upload_userlist" method="post" enctype="multipart/form-data">
+	  <input type="file" name="file" id="file" accept=".txt, .csv">
 	  <input type="submit" value="Upload" name="submit">
 	</form>
 	</div>
