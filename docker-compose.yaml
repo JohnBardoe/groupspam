@@ -9,4 +9,4 @@ services:
     stop_signal: SIGINT
     network_mode: host
     ports:
-      - '8000:8000'
+      - '8000:5000'
