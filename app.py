@@ -1,5 +1,21 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
+import pymongo
+import csv
+import pprint
+
 app = Flask(__name__)
+db = pymongo.MongoClient('mongodb://mongo:27017/')
+
+
+@app.route('/upload_userlist')
+def upload_userlist():
+    #form with file upload
+    #get file, parse it and upload to mongo
+    userlist = []
+    file = request.files['file']
+    if file:
+        return pprint.pformat(file)
+
 
 @app.route('/')
 def index():
