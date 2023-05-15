@@ -1,0 +1,21 @@
+name: Deployment
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  execute:
+    timeout-minutes: 1 #this should be enough to start, the bot itself detaches afterwards
+    runs-on: anglichanin 
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Kill all running instances of the bot
+        run: docker-compose down
+
+      - name: Start the bot
+        run: docker-compose up
