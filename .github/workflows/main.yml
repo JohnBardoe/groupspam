@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: apt install
-        run: apt install gcc -y
+        run: apt install build-essential python3-dev -y
 
       - name: compose up
         run: docker-compose up --build -d
