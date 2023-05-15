@@ -10,3 +10,14 @@ services:
     network_mode: host
     ports:
       - '8000:5000'
+    
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 36Lb2VMF
+    ports:
+      - '27017'
+    volumes:
+      - 'mongo:/data/db'
