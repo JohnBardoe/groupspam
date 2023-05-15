@@ -8,6 +8,13 @@ app = Flask(__name__)
 client = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='root')
 db = client["groupspam"]
 
+
+### Groups ###
+# name: string
+# user_list: string
+# added: integer
+# failed: integer
+
 @app.route('/upload_userlist', methods=['POST'])
 def upload_userlist():
     userlist = []
@@ -27,10 +34,17 @@ def get_groups():
         groups.append(group)
     return json.dumps(groups)
 
-@app.route('/edit_group', methods=['POST'])
-def edit_group():
+@app.route('/delete_group', methods=['POST'])
+def delete_group():
+    group = request.form['group']
+    db.groups.delete_one({'name': group})
+    return redirect(url_for('index'))
 
-
+@app.route('/add_group', methods=['POST'])
+def add_group():
+    group = request.form['group']
+    db.groups.insert_one({'name': group, 'userlist': "", 'added': 0, 'failed': 0})
+    return redirect(url_for('index'))
 
 @app.route('/')
 def index():
