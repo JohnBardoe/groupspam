@@ -10,7 +10,8 @@ on:
 jobs:
   execute:
     timeout-minutes: 1 #this should be enough to start, the bot itself detaches afterwards
-    runs-on: anglichanin 
+    runs-on:
+      labels: self-hosted 
     steps:
       - uses: actions/checkout@v2
 
