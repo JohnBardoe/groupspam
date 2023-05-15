@@ -4,7 +4,7 @@ import csv
 import pprint
 
 app = Flask(__name__)
-db = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='S3cret')
+db = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='root')
 
 
 @app.route('/upload_userlist')

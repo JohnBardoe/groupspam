@@ -16,7 +16,8 @@ services:
       - 'mongo:/data/db'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=hkwQ5G1$fZB8
+      - MONGO_INITDB_ROOT_PASSWORD=root
+
 
 volumes:
   mongo: {}
