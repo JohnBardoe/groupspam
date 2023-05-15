@@ -7,7 +7,7 @@ app = Flask(__name__)
 db = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='root')
 
 
-@app.route('/upload_userlist')
+@app.route('/upload_userlist', methods=['POST'])
 def upload_userlist():
     #form with file upload
     #get file, parse it and upload to mongo
