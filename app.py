@@ -7,6 +7,7 @@ import json
 import multiprocessing
 import bot
 from time import sleep
+from random import shuffle
 
 
 app = Flask(__name__)
@@ -98,6 +99,7 @@ def start():
             tasks.append([user, group])
     
     checkUserLists(db.added.distinct('user'))
+    shuffle(tasks)
 
     proxy = {}
     settings_db = db.settings.find_one()
