@@ -13,7 +13,6 @@ app = Flask(__name__)
 client = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='root')
 db = client["groupspam"]
 run_flag = multiprocessing.Value('i', True)
-manager = multiprocessing.Manager()
 
 # name: string
 # user_list: string
