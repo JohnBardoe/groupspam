@@ -25,31 +25,31 @@
 						<div class="card" id="{{ group['name'] }}">
 							<div class="card-body">
 								<!-- selector for user list. has label 'User List' -->
-								<h6 class="text-center card-subtitle mb-2 text-muted">Added: -- Failed: --</h6>
-								<!-- textbox for group name with label 'Group Name' -->
-								<label for="group" class="form-label">Group</label>
-								<input type="text" class="form-control" id="group" name="group" rows="1"
-									placeholder="{{ group['name'] }}"></input>
-								<label for="userlist" class="form-label">User list</label>
-								<select id="userlist" class="form-select" aria-label="User List">
-									{% for userlist in userlists %}
-									<option value="{{ userlist['name'] }}" {% if userlist['name']==group['userlist'] %}
-										selected {% endif %}>{{ userlist['name'] }}</option>
-									{% endfor %}
-								</select>
-								<div class="row mx-3 my-3">
-									<form action="/group_delete" method="post">
+								<form id="{{ group['name'] }}-update" action="/update_group" method="post">
+									<input type="hidden" name="oldname" value="{{ group['name'] }}">
+									<h6 class="text-center card-subtitle mb-2 text-muted">Added: -- Failed: --</h6>
+									<!-- textbox for group name with label 'Group Name' -->
+									<label for="group" class="form-label">Group</label>
+									<input type="text" class="form-control" id="groupname" name="groupname" rows="1"
+										placeholder="{{ group['name'] }}"></input>
+									<label for="userlist" class="form-label">User list</label>
+									<select id="userlist" class="form-select" aria-label="User List">
+										{% for userlist in userlists %}
+										<option value="{{ userlist['name'] }}" {% if userlist['name']==group['userlist'] %}
+											selected {% endif %}>{{ userlist['name'] }}</option>
+										{% endfor %}
+									</select>
+								</form>
+								<div class="row row-cols-2 mx-3 my-3">
+									<form action="/delete_group" method="post">
 										<input type="hidden" name="group" value="{{ group['name'] }}">
 										<div class="col">
 											<button type="submit" class="btn btn-danger">Delete</button>
 										</div>
 									</form>
-									<form action="/group_edit" method="post">
-										<input type="hidden" name="group" value="{{ group['name'] }}">
 										<div class="col">
-											<button type="submit" class="btn btn-primary">Save</button>
+											<button form="{{ group['name'] }}-update" type="submit" class="btn btn-primary">Save</button>
 										</div>
-									</form>
 								</div>
 							</div>
 						</div>
@@ -141,7 +141,7 @@
 <script>
 	// update groups every 5 seconds
 	setInterval(function () {
-		fetch('/get_groups')
+		fetch('/progress')
 			.then(response => response.json())
 			.then(data => {
 				for (var i = 0; i < data.length; i++) {
@@ -160,46 +160,4 @@
 				log.innerHTML = data;
 			});
 	}, 1000);
-	// delete group
-	var buttons = document.getElementsByClassName('btn-danger');
-	for (var i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener('click', function () {
-			var group = this.parentNode.parentNode.parentNode.parentNode.id;
-			fetch('/delete_group', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					'group': group
-				})
-			})
-				.then(response => response.json())
-				.then(data => {
-					if (data.success) {
-						location.reload();
-					}
-				});
-		});
-	}
-	// send request when userlist is changed
-	var userlists = document.getElementsByClassName('form-select');
-	for (var i = 0; i < userlists.length; i++) {
-		userlists[i].addEventListener('change', function () {
-			var group = this.parentNode.parentNode.parentNode.id;
-			var userlist = this.value;
-			fetch('/set_userlist', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					'group': group,
-					'userlist': userlist
-				})
-			})
-				.then(response => response.json())
-		});
-	});
-  }
 </script>

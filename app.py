@@ -13,8 +13,9 @@ app = Flask(__name__)
 client = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='root')
 db = client["groupspam"]
 run_flag = multiprocessing.Value('i', True)
+manager = multiprocessing.Manager()
+progress_data = manager.dict()
 
-### Groups ###
 # name: string
 # user_list: string
 # added: integer
@@ -48,7 +49,18 @@ def delete_group():
 @app.route('/add_group', methods=['POST'])
 def add_group():
     group = request.form['groupname']
-    db.groups.insert_one({'name': group, 'userlist': "", 'added': 0, 'failed': 0})
+    db.groups.insert_one({'name': group, 'userlist': ""})
+    return redirect(url_for('index'))
+
+@app.route('/update_group', methods=['POST'])
+def update_group():
+    group_name = request.form['oldname']
+    new_name = request.form['groupname']
+    userlist = request.form['userlist']
+    group = db.groups.find_one({'name': group_name})
+    group['name'] = new_name
+    group['userlist'] = userlist
+    db.groups.replace_one({'name': group_name}, group)
     return redirect(url_for('index'))
 
 @app.route('/set_settings', methods=['POST'])
@@ -62,11 +74,13 @@ def set_settings():
 
 @app.route('/start', methods=['POST'])
 def start():
-    global run_flag
-    db.groups.update_many({}, {'$set': {'added': 0, 'failed': 0}})
+    global run_flag, progress_data
+    progress_data.clear()
     group_names = db.groups.distinct('name')
     tasks = []
     for group in group_names:
+        progress_data[group] = {'added': 0, 'failed': 0}
+
         userlist = db.groups.find_one({'name': group})['userlist']
         for user in userlist:
             tasks.append([user, group])
@@ -83,7 +97,8 @@ def start():
     run_flag.value = False
     sleep(5)
     run_flag.value = True
-    p = multiprocessing.Process(target=bot.entry, args=(run_flag, tasks, group_names, proxy))
+    #clear progess data
+    p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, progress_data, tasks, group_names, proxy))
     p.start()
     return redirect(url_for('index'))
 
@@ -93,6 +108,10 @@ def log():
     with open('botlog.out', 'r') as f:
         log = f.read().split('\n')
     return json.dumps(log)
+
+@app.route('/progress', methods=['GET'])
+def progress():
+    return json.dumps(progress_data)
 
 @app.route('/')
 def index():

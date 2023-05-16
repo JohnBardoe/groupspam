@@ -21,7 +21,7 @@ def getTasks(inout_path):
                 pass
     return tasks
 
-async def main(run_flag, accounts, tasks, groups, proxy):
+async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
     clients = []
     for account_path in accounts:
         account_id = account_path.split("/")[-1]
@@ -58,7 +58,9 @@ async def main(run_flag, accounts, tasks, groups, proxy):
                 if tasks[i][0] == user:
                     del tasks[i]
                     break
+            progress_data[group]['success'] += 1
         except Exception as e:
+            progress_data[group]['failed'] += 1
             for i in range(len(report)):
                 if report[i][2] == group:
                     report[i][1] += 1
@@ -87,7 +89,7 @@ async def main(run_flag, accounts, tasks, groups, proxy):
     for client in banned_clients:
         print(client)
    
-def entry(run_flag, tasks, groups, proxy):
+def entry(progress_data, run_flag, tasks, groups, proxy):
     accounts = glob.glob("./accounts/*")
     sessions = glob.glob("*.session")
     print("Deleting " + str(len(sessions)) + " sessions")
@@ -98,4 +100,4 @@ def entry(run_flag, tasks, groups, proxy):
     sys.stderr = open("botlog.err", "a", buffering=0)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(run_flag, accounts, tasks, groups, proxy))
+    loop.run_until_complete(main(progress_data, run_flag, accounts, tasks, groups, proxy))
