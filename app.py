@@ -90,12 +90,15 @@ def set_settings():
 def start():
     global run_flag
     group_names = db.groups.distinct('name')
+    userlists_names = [ i['name'] for i in db.userlists.distinct('name') ] 
+    group_input = []
     tasks = []
     for group in group_names:
         userlist_name = db.groups.find_one({'name': group})['userlist']
         userlist =  db.userlists.find_one({'name': userlist_name})['userlist']
         for user in userlist:
             tasks.append([user, group])
+        group_input.append({'name': group['name'], 'userlist_names': userlist_names})
     
     checkUserLists(db.added.distinct('user'))
 
@@ -114,7 +117,7 @@ def start():
     run_flag.value = True
     #clear progess data
     settings = {"maxadd": int(settings_db['maxadd']), "maxreq": int(settings_db['maxreq']), "proxy": proxy}
-    p = multiprocessing.Process(target=bot.entry, args=(run_flag, tasks, group_names, settings))
+    p = multiprocessing.Process(target=bot.entry, args=(run_flag, tasks, group_input, settings))
     p.start()
     return redirect(url_for('index'))
 
