@@ -100,7 +100,7 @@ def start():
     sleep(5)
     run_flag.value = True
     #clear progess data
-    settings = {"maxadd": settings_db['maxadd'], "maxreq": settings_db['maxreq'], "proxy": proxy}
+    settings = {"maxadd": int(settings_db['maxadd']), "maxreq": int(settings_db['maxreq']), "proxy": proxy}
     p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, tasks, group_names, settings))
     p.start()
     return redirect(url_for('index'))
