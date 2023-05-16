@@ -154,10 +154,6 @@
 	// update log every 5 seconds
 	setInterval(function () {
 		fetch('/log')
-			.then(response => response.json())
-			.then(data => {
-				var log = document.getElementById('log');
-				log.innerHTML = data;
-			});
-	}, 1000);
+			.then(respone => document.getElementById('log').innerHTML = respone.text());
+	}, 1000);	
 </script>

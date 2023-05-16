@@ -58,7 +58,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
                 if tasks[i][0] == user:
                     del tasks[i]
                     break
-            progress_data[group]['success'] += 1
+            progress_data[group]['added'] += 1
         except Exception as e:
             progress_data[group]['failed'] += 1
             for i in range(len(report)):

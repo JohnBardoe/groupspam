@@ -106,11 +106,15 @@ def start():
 @app.route('/log', methods=['GET'])
 def log():
     log = []
+    log_string = ""
     with open('botlog.out', 'r') as f:
         log = f.read().split('\n')
     with open('botlog.err', 'r') as f:
         log += f.read().split('\n')
-    return json.dumps(log)
+    for i in range(len(log)):
+        log_string += log[i] + '<br>'
+
+    return log_string 
 
 @app.route('/progress', methods=['GET'])
 def progress():
