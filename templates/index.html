@@ -30,10 +30,10 @@
 									<h6 class="text-center card-subtitle mb-2 text-muted">Added: -- Failed: --</h6>
 									<!-- textbox for group name with label 'Group Name' -->
 									<label for="group" class="form-label">Group</label>
-									<input type="text" class="form-control" id="groupname" name="groupname" rows="1"
+									<input type="text" class="form-control" id="{{ group['name'] }}-groupname" name="groupname" rows="1"
 										value="{{ group['name'] }}"></input>
 									<label for="userlist" class="form-label">User list</label>
-									<select id="userlist" name="userlist" class="form-select" aria-label="User List">
+									<select id="{{ group['name'] }}-userlist" name="userlist" class="form-select" aria-label="User List">
 						{% for userlist in userlists %}
 										<option value="{{ userlist['name'] }}" {% if userlist['name']==group['userlist'] %}
 											selected {% endif %}>{{ userlist['name'] }}</option>
