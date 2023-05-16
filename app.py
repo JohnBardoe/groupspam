@@ -111,7 +111,10 @@ def log():
 
 @app.route('/progress', methods=['GET'])
 def progress():
-    return json.dumps(progress_data)
+    progress_json = {}
+    for key in progress_data.keys():
+        progress_json[key] = progress_data[key]
+    return json.dumps(progress_json)
 
 @app.route('/')
 def index():
