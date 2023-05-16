@@ -28,7 +28,7 @@
 		<label for="userlist" class="form-label">User list</label>
 		<select id="userlist" class="form-select" aria-label="User List">
 			{% for userlist in userlists %}
-			<option value="{{ userlist['name'] }}" {% if userlist['name'] == group['userlist'] %} selected {% endif %}>{{ userlist }}</option>
+			<option value="{{ userlist['name'] }}" {% if userlist['name'] == group['userlist'] %} selected {% endif %}>{{ userlist['name'] }}</option>
 			{% endfor %}
 		</select>
 	      <form action="/group_delete" method="post">
