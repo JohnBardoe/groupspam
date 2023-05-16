@@ -107,12 +107,15 @@ def start():
 def log():
     log = []
     log_string = ""
-    with open('botlog.out', 'r') as f:
-        log = f.read().split('\n')
-    with open('botlog.err', 'r') as f:
-        log += f.read().split('\n')
-    for i in range(len(log)):
-        log_string += log[i] + '<br>'
+    try:
+        with open('botlog.out', 'r') as f:
+            log = f.read().split('\n')
+        with open('botlog.err', 'r') as f:
+            log += f.read().split('\n')
+        for i in range(len(log)):
+            log_string += log[i] + '<br>'
+    except:
+        return "Waiting for you to start me..."
 
     return log_string 
 
