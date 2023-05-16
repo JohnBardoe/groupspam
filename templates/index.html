@@ -23,8 +23,10 @@
 		<!-- selector for user list. has label 'User List' -->
 	        <h6 class="card-subtitle mb-2 text-muted">Added: -- Failed: --</h6>
 		<!-- textbox for group name with label 'Group Name' -->
+		<label for="group" class="form-label">Group</label>
 		<input type="text" class="form-control" id="group" name="group" rows="1" placeholder="{{ group['name'] }}"></input>
-		<select class="form-select" aria-label="User List">
+		<label for="userlist" class="form-label">User list</label>
+		<select id="userlist" class="form-select" aria-label="User List">
 			{% for userlist in userlists %}
 			<option value="{{ userlist }}" {% if userlist == group['userlist'] %} selected {% endif %}>{{ userlist }}</option>
 			{% endfor %}
@@ -43,9 +45,9 @@
 	{% endfor %}
     </div>
     </div>
-    <div class="col-3 mx-1 my-1">
+    <div class="col-3">
 		<form action="/start" method="post">
-			<button type="submit" class="btn btn-success btn-lg btn-block w-100">Start</button>
+			<button type="submit" class="btn btn-success btn-lg btn-block w-100">Save and start</button>
 			</form> 
       <div class="card">
 	<div class="card-body">
@@ -94,9 +96,9 @@
       <div class="card">
 	<div class="card-body">
 	<h5 class="card-title">Upload Accounts</h5>
-	<form action="/upload" method="post" enctype="multipart/form-data">
-	  <input type="file" name="file" id="file" accept=".zip,.rar,.7zip">
-	  <input type="submit" value="Upload" name="submit">
+	<form action="/upload_accounts" method="post" enctype="multipart/form-data">
+	  <input type="file" class="form-control" name="file" id="file" accept=".zip,.rar,.7zip">
+	  <input type="submit" value="Upload" name="submit" class="btn btn-primary">
 	</form>
 	</div>
       </div>
@@ -104,8 +106,8 @@
 	<div class="card-body">
 	<h5 class="card-title">Upload user list</h5>
 	<form action="/upload_userlist" method="post" enctype="multipart/form-data">
-	  <input type="file" name="file" id="file" accept=".txt, .csv">
-	  <input type="submit" value="Upload" name="submit">
+	  <input type="file" class="form-control" name="file" id="file" accept=".txt, .csv">
+	  <input type="submit" value="Upload" name="submit" class="btn btn-primary">
 	</form>
 	</div>
       </div>
