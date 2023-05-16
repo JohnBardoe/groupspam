@@ -74,7 +74,6 @@ async def main(run_flag, accounts, tasks, groups, settings):
                 continue
             if "deleted/deactivated" in str(e):
                 print("This account is deleted/deactivated. Don't use it")
-                me = await client.get_entity('me')
                 banned_clients.append(me.id)
                 for i in range(len(clients)):
                     if clients[i] == client:
@@ -83,7 +82,6 @@ async def main(run_flag, accounts, tasks, groups, settings):
                 continue
             if "A wait of" in str(e):
                 print("This account is limited. Don't use it")
-                me = await client.get_entity('me')
                 for i in range(len(clients)):
                     if clients[i] == client:
                         del clients[i]
