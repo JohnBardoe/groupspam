@@ -74,7 +74,7 @@ async def main(run_flag, accounts, tasks, groups, settings):
                 continue
             if "deleted/deactivated" in str(e):
                 print("This account is deleted/deactivated. Don't use it")
-                banned_clients.append(me.id)
+                banned_clients.append(client['id'])
                 for i in range(len(clients)):
                     if clients[i] == client:
                         del clients[i]
