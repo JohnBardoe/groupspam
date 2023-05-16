@@ -21,7 +21,7 @@ def getTasks(inout_path):
                 pass
     return tasks
 
-async def main(progress_data, run_flag, accounts, tasks, groups, settings):
+async def main(run_flag, accounts, tasks, groups, settings):
     clients = []
     for account_path in accounts:
         account_id = account_path.split("/")[-1]
@@ -58,11 +58,12 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
                 if tasks[i][0] == user:
                     del tasks[i]
                     break
-            progress_data[group]['added'] += 1
             client['added'] += 1
         except Exception as e:
-            progress_data[group]['failed'] += 1
             client['failed'] += 1
+            print("Failed to add " + user + " to " + group)
+            print(e)
+
             for i in range(len(report)):
                 if report[i][2] == group:
                     report[i][1] += 1
@@ -88,8 +89,6 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
                         del clients[i]
                         break
                 continue
-            print("Failed to add " + user + " to " + group)
-            print(e)
             await asyncio.sleep(random.randint(1, 3))
             continue
         finally:
@@ -107,7 +106,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
     for client in banned_clients:
         print(client)
 
-def entry(progress_data, run_flag, tasks, groups, settings):
+def entry(run_flag, tasks, groups, settings):
     accounts = glob.glob("./accounts/*")
     sessions = glob.glob("*.session")
     print("Deleting " + str(len(sessions)) + " sessions")
@@ -120,4 +119,4 @@ def entry(progress_data, run_flag, tasks, groups, settings):
     sys.stderr.reconfigure(line_buffering=True)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(progress_data, run_flag, accounts, tasks, groups, settings))
+    loop.run_until_complete(main(run_flag, accounts, tasks, groups, settings))

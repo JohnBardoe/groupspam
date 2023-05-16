@@ -14,12 +14,18 @@ client = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password
 db = client["groupspam"]
 run_flag = multiprocessing.Value('i', True)
 manager = multiprocessing.Manager()
-progress_data = manager.dict()
 
 # name: string
 # user_list: string
 # added: integer
 # failed: integer
+def readLog():
+    log = []
+    with open('botlog.out', 'r') as f:
+        log = f.read().split('\n')
+    with open('botlog.err', 'r') as f:
+        log += f.read().split('\n')
+    return log
 
 @app.route('/upload_userlist', methods=['POST'])
 def upload_userlist():
@@ -74,13 +80,10 @@ def set_settings():
 
 @app.route('/start', methods=['POST'])
 def start():
-    global run_flag, progress_data
-    progress_data.clear()
+    global run_flag
     group_names = db.groups.distinct('name')
     tasks = []
     for group in group_names:
-        progress_data[group] = {'added': 0, 'failed': 0}
-
         userlist_name = db.groups.find_one({'name': group})['userlist']
         userlist =  db.userlists.find_one({'name': userlist_name})['userlist']
         for user in userlist:
@@ -101,7 +104,7 @@ def start():
     run_flag.value = True
     #clear progess data
     settings = {"maxadd": int(settings_db['maxadd']), "maxreq": int(settings_db['maxreq']), "proxy": proxy}
-    p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, tasks, group_names, settings))
+    p = multiprocessing.Process(target=bot.entry, args=(run_flag, tasks, group_names, settings))
     p.start()
     return redirect(url_for('index'))
 
@@ -110,10 +113,7 @@ def log():
     log = []
     log_string = ""
     try:
-        with open('botlog.out', 'r') as f:
-            log = f.read().split('\n')
-        with open('botlog.err', 'r') as f:
-            log += f.read().split('\n')
+        log = readLog()
         for i in range(len(log)):
             log_string += log[i] + '<br>'
     except:
@@ -123,10 +123,18 @@ def log():
 
 @app.route('/progress', methods=['GET'])
 def progress():
-    progress_json = {}
-    for key in progress_data.keys():
-        progress_json[key] = progress_data[key]
-    return json.dumps(progress_json)
+    progress = {}
+    log = readLog()
+    for group in db.groups.find():
+        progress[group['name']] = {"added": 0, "failed": 0}
+    for line in log:
+        if 'Successfully added' in line:
+            group = line.split(' ')[4]
+            progress[group]['added'] += 1
+        elif 'Failed to add' in line:
+            group = line.split(' ')[5]
+            progress[group]['failed'] += 1
+    return json.dumps(progress)
 
 @app.route('/')
 def index():
