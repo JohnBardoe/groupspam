@@ -98,7 +98,7 @@ def start():
     sleep(5)
     run_flag.value = True
     #clear progess data
-    p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, progress_data, tasks, group_names, proxy))
+    p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, tasks, group_names, proxy))
     p.start()
     return redirect(url_for('index'))
 
