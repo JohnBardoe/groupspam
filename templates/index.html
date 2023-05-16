@@ -28,7 +28,7 @@
 		<label for="userlist" class="form-label">User list</label>
 		<select id="userlist" class="form-select" aria-label="User List">
 			{% for userlist in userlists %}
-			<option value="{{ userlist }}" {% if userlist == group['userlist'] %} selected {% endif %}>{{ userlist }}</option>
+			<option value="{{ userlist['name'] }}" {% if userlist['name'] == group['userlist'] %} selected {% endif %}>{{ userlist }}</option>
 			{% endfor %}
 		</select>
 	      <form action="/group_delete" method="post">
@@ -52,7 +52,7 @@
       <div class="card">
 	<div class="card-body">
 	<h5 class="card-title">Log</h5>
-	<div class="card-text">
+	<div class="card-text overflow-auto">
 		<b> Waiting to be updated... </b>
 	</div>
 	</div>
@@ -79,12 +79,18 @@
     <div class="col-3">
       <div class="card">
 	<div class="card-body">
-	<h5 class="card-title">Proxy Settings</h5>
+	<h5 class="card-title">Settings</h5>
 	<!-- textbox for proxy settings with label 'URL' -->
-	<form action="/proxy" method="post">
+	<form action="/set_settings" method="post">
 	  <div class="mb-3">
-	    <label for="proxyurl" class="form-label">URL</label>
-	    <input type="text" class="form-control" id="proxyurl" name="proxyurl">
+	    <label for="proxyurl" class="form-label">Proxy URL</label>
+	    <input type="text" class="form-control" id="proxyurl" name="proxyurl" value="{{ settings['proxy'] }}">
+	    <!-- label and input number for max additions per day -->
+	    <label for="maxadd" class="form-label">Max additions per day</label>
+	    <input type="number" class="form-control" id="maxadd" name="maxadd" value="{{ settings['maxadd'] }}">
+	    <!-- label and input number for max requests per day -->
+	    <label for="maxreq" class="form-label">Max requests per day</label>
+	    <input type="number" class="form-control" id="maxreq" name="maxreq" value="{{ settings['maxreq'] }}">
 	  </div>
 	  <button type="submit" class="btn btn-primary">Submit</button>
 	</form>
@@ -119,7 +125,7 @@
 <script>
   // update groups every 5 seconds
   setInterval(function() {
-    fetch('/groups')
+    fetch('/get_groups')
       .then(response => response.json())
       .then(data => {
 	for (var i = 0; i < data.length; i++) {
@@ -129,4 +135,55 @@
 	}
       });
   }, 1000);
+  // update log every 5 seconds
+  setInterval(function() {
+    fetch('/log')
+      .then(response => response.json())
+      .then(data => {
+	var log = document.getElementById('log');
+	log.innerHTML = data;
+      });
+  }, 1000);
+  // delete group
+  var buttons = document.getElementsByClassName('btn-danger');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function() {
+      var group = this.parentNode.parentNode.parentNode.parentNode.id;
+      fetch('/delete_group', {
+	method: 'POST',
+	headers: {
+	  'Content-Type': 'application/json'
+	},
+	body: JSON.stringify({
+	  'group': group
+	})
+      })
+	.then(response => response.json())
+	.then(data => {
+	  if (data.success) {
+	    location.reload();
+	  }
+	});
+    });
+  }
+  // send request when userlist is changed
+  var userlists = document.getElementsByClassName('form-select');
+  for (var i = 0; i < userlists.length; i++) {
+    userlists[i].addEventListener('change', function() {
+      var group = this.parentNode.parentNode.parentNode.id;
+      var userlist = this.value;
+      fetch('/set_userlist', {
+	method: 'POST',
+	headers: {
+	  'Content-Type': 'application/json'
+	},
+	body: JSON.stringify({
+	  'group': group,
+	  'userlist': userlist
+	})
+      })
+	.then(response => response.json())
+	});
+    });
+  }
 </script>

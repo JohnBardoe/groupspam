@@ -49,6 +49,17 @@ def add_group():
     db.groups.insert_one({'name': group, 'userlist': "", 'added': 0, 'failed': 0})
     return redirect(url_for('index'))
 
+@app.route('/set_settings', methods=['POST'])
+def set_settings():
+    proxy_url = request.form['proxyurl']
+    db.settings.update_one({}, {'$set': {'proxy_url': proxy_url}}, upsert=True)
+    maxreq = request.form['maxreq']
+    db.settings.update_one({}, {'$set': {'maxreq': maxreq}}, upsert=True)
+    maxadd = request.form['maxadd']
+    db.settings.update_one({}, {'$set': {'maxadd': maxadd}}, upsert=True)
+
+    return redirect(url_for('index'))
+
 @app.route('/start', methods=['POST'])
 def start():
     global run_flag
@@ -60,8 +71,8 @@ def start():
         for user in userlist:
             tasks.append([user, group])
 
-    proxy_url = db.settings.find_one({'name': 'proxy'})['value']
     proxy = {}
+    proxy_url = db.settings.find_one({'proxy_url': {'$exists': True}})['proxy_url']
     if proxy_url != "":
         proxy_url = proxy_url.split('@')
         proxy['addr'] = proxy_url[0].split(':')[0]
@@ -76,11 +87,19 @@ def start():
     p.start()
     return redirect(url_for('index'))
 
+@app.route('/log', methods=['GET'])
+def log():
+    log = []
+    with open('botlog.out', 'r') as f:
+        log = f.read().split('\n')
+    return json.dumps(log)
 
 @app.route('/')
 def index():
     groups = db.groups.find()
-    return render_template('index.html', groups=groups)
+    userlists = db.userlists.find()
+    settings = db.settings.find()
+    return render_template('index.html', groups=groups, userlists=userlists, settings=settings)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
