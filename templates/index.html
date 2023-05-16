@@ -31,7 +31,7 @@
 									<!-- textbox for group name with label 'Group Name' -->
 									<label for="group" class="form-label">Group</label>
 									<input type="text" class="form-control" id="groupname" name="groupname" rows="1"
-										placeholder="{{ group['name'] }}"></input>
+										value="{{ group['name'] }}"></input>
 									<label for="userlist" class="form-label">User list</label>
 									<select id="userlist" name="userlist" class="form-select" aria-label="User List">
 										{% for userlist in userlists %}
