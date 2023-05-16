@@ -98,6 +98,8 @@ def entry(progress_data, run_flag, tasks, groups, proxy):
     
     sys.stdout = open("botlog.out", "w+")
     sys.stderr = open("botlog.err", "w+")
+    sys.stdout.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(line_buffering=True)
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main(progress_data, run_flag, accounts, tasks, groups, proxy))
