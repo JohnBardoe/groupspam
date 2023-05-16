@@ -3,11 +3,14 @@ import pymongo
 import csv
 import pprint
 import json
+import multiprocessing
+import bot
+
 
 app = Flask(__name__)
 client = pymongo.MongoClient('mongodb://mongo:27017/', username='root', password='root')
 db = client["groupspam"]
-
+run_flag = multiprocessing.Value('i', True)
 
 ### Groups ###
 # name: string
@@ -23,7 +26,7 @@ def upload_userlist():
         string = file.read().decode('utf-8')
         lines = string.split('\n')
         lines = [line.replace('\r', '') for line in lines]
-        db.insert_one({ 'name' : file.name, 'users': lines})
+        db.userlists.insert_one({'name': file.name, 'userlist': lines})
         return 200, file.name
     return 500, 'Error uploading file'
 
@@ -45,6 +48,34 @@ def add_group():
     group = request.form['groupname']
     db.groups.insert_one({'name': group, 'userlist': "", 'added': 0, 'failed': 0})
     return redirect(url_for('index'))
+
+@app.route('/start', methods=['POST'])
+def start():
+    global run_flag
+    db.groups.update_many({}, {'$set': {'added': 0, 'failed': 0}})
+    group_names = db.groups.distinct('name')
+    tasks = []
+    for group in group_names:
+        userlist = db.groups.find_one({'name': group})['userlist']
+        for user in userlist:
+            tasks.append([user, group])
+
+    proxy_url = db.settings.find_one({'name': 'proxy'})['value']
+    proxy = {}
+    if proxy_url != "":
+        proxy_url = proxy_url.split('@')
+        proxy['addr'] = proxy_url[0].split(':')[0]
+        proxy['port'] = proxy_url[0].split(':')[1]
+        proxy['username'] = proxy_url[1].split(':')[0]
+        proxy['password'] = proxy_url[1].split(':')[1]
+        proxy['proxy_type'] = 'http'
+    run_flag.value = False
+    sleep(5)
+    run_flag.value = True
+    p = multiprocessing.Process(target=bot.entry, args=(run_flag, tasks, group_names, proxy))
+    p.start()
+    return redirect(url_for('index'))
+
 
 @app.route('/')
 def index():

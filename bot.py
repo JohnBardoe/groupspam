@@ -21,7 +21,7 @@ def getTasks(inout_path):
                 pass
     return tasks
 
-async def main(accounts, tasks, groups, proxy):
+async def main(run_flag, accounts, tasks, groups, proxy):
     clients = []
     for account_path in accounts:
         account_id = account_path.split("/")[-1]
@@ -34,7 +34,7 @@ async def main(accounts, tasks, groups, proxy):
     
     report = [ [0, 0, group] for group in groups ]
     banned_clients = []
-    while tasks != []:
+    while tasks != [] and run_flag.value:
         try:
             task = tasks.pop()
             user = task[0]
@@ -49,7 +49,7 @@ async def main(accounts, tasks, groups, proxy):
             elif isinstance(group_entity, telethon.tl.types.Channel):
                 await client(InviteToChannelRequest(group_entity.id, [user]))
             await client.disconnect()
-            print("Added " + user + " to " + group)
+            print("Successfully added " + user + " to " + group)
             for i in range(len(report)):
                 if report[i][2] == group:
                     report[i][0] += 1
@@ -87,28 +87,15 @@ async def main(accounts, tasks, groups, proxy):
     for client in banned_clients:
         print(client)
    
-if __name__ == "__main__":
+def entry(run_flag, tasks, groups, proxy):
     accounts = glob.glob("./accounts/*")
-    users = getTasks("./input.csv")
-    groups = []
-    tasks = []
-    with open("target.groups") as f:
-        groups = f.readlines()
-    groups = [x.strip() for x in groups]
-    for user in users:
-        for group in groups:
-            tasks.append([user, group])
-    print("Found " + str(len(groups)) + " groups")
-    print("Found " + str(len(accounts)) + " accounts")
     sessions = glob.glob("*.session")
     print("Deleting " + str(len(sessions)) + " sessions")
     for session in sessions:
         os.remove(session)
     
-    proxy = None
-    if os.path.exists("proxy.settings"):
-        with open("proxy.settings") as f:
-            proxy = json.load(f)
+    sys.stdout = open("botlog.out", "a", buffering=0)
+    sys.stderr = open("botlog.err", "a", buffering=0)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(accounts, tasks, groups, proxy))
+    loop.run_until_complete(main(run_flag, accounts, tasks, groups, proxy))
