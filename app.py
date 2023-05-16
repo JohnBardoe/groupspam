@@ -27,8 +27,8 @@ def upload_userlist():
         lines = string.split('\n')
         lines = [line.replace('\r', '') for line in lines]
         db.userlists.insert_one({'name': file.name, 'userlist': lines})
-        return 200, file.name
-    return 500, 'Error uploading file'
+        return file.name
+    return 'error uploading userlist' 
 
 @app.route('/get_groups', methods=['GET'])
 def get_groups():
