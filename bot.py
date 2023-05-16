@@ -88,7 +88,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
     print("Banned clients: ")
     for client in banned_clients:
         print(client)
-   
+
 def entry(progress_data, run_flag, tasks, groups, proxy):
     accounts = glob.glob("./accounts/*")
     sessions = glob.glob("*.session")
@@ -96,8 +96,8 @@ def entry(progress_data, run_flag, tasks, groups, proxy):
     for session in sessions:
         os.remove(session)
     
-    sys.stdout = open("botlog.out", "a", buffering=0)
-    sys.stderr = open("botlog.err", "a", buffering=0)
+    sys.stdout = open("botlog.out", "w+")
+    sys.stderr = open("botlog.err", "w+")
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main(progress_data, run_flag, accounts, tasks, groups, proxy))
