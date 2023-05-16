@@ -34,7 +34,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
     
     report = [ [0, 0, group] for group in groups ]
     banned_clients = []
-    while tasks != [] and run_flag.value:
+    while tasks != [] and clients != [] and run_flag.value:
         try:
             task = tasks.pop()
             user = task[0]
@@ -93,7 +93,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
             await asyncio.sleep(random.randint(1, 3))
             continue
         finally:
-            if client['added'] >= settings['maxadd']or client['failed'] + client['added'] >= settings['maxreq']:
+            if client['added'] >= settings['maxadd'] or client['failed'] + client['added'] >= settings['maxreq']:
                 print("This account has added enough users, don't use it ", client['client'].session)
                 for i in range(len(clients)):
                     if clients[i] == client:
