@@ -26,6 +26,15 @@ def readLog():
         log += f.read().split('\n')
     return log
 
+def checkUserLists(added):
+    userlists = db.userlists.find()
+    for userlist in userlists:
+        for user in userlist['userlist']:
+            if user in added:
+                userlist['userlist'].remove(user)
+        db.userlists.replace_one({'name': userlist['name']}, userlist)
+    return False
+
 @app.route('/upload_userlist', methods=['POST'])
 def upload_userlist():
     userlist = []
@@ -87,6 +96,8 @@ def start():
         userlist =  db.userlists.find_one({'name': userlist_name})['userlist']
         for user in userlist:
             tasks.append([user, group])
+    
+    checkUserLists(db.added.distinct('user'))
 
     proxy = {}
     settings_db = db.settings.find_one()
@@ -129,6 +140,8 @@ def progress():
     for line in log:
         if 'Successfully added' in line:
             group = line.split(' ')[4]
+            user = line.split(' ')[2]
+            db.added.insert_one({'user': user})
             progress[group]['added'] += 1
         elif 'Failed to add' in line:
             group = line.split(' ')[5]
