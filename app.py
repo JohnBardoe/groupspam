@@ -158,7 +158,7 @@ def index():
     for userlist in userlists:
         userlist_names.append(userlist['name'])
     for group in groups:
-        groups_input.append({'name' : group['name'], 'userlist': group['userlist']}, 'userlist_names': userlist_names)
+        groups_input.append({'name' : group['name'], 'userlist': group['userlist'], 'userlist_names': userlist_names})
     return render_template('index.html', groups=groups_input, settings=settings)
 
 if __name__ == '__main__':
