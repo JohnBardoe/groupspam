@@ -33,7 +33,7 @@
 									<input type="text" class="form-control" id="groupname" name="groupname" rows="1"
 										placeholder="{{ group['name'] }}"></input>
 									<label for="userlist" class="form-label">User list</label>
-									<select id="userlist" class="form-select" aria-label="User List">
+									<select id="userlist" name="userlist" class="form-select" aria-label="User List">
 										{% for userlist in userlists %}
 										<option value="{{ userlist['name'] }}" {% if userlist['name']==group['userlist'] %}
 											selected {% endif %}>{{ userlist['name'] }}</option>
