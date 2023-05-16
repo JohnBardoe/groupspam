@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from werkzeug.utils import secure_filename
 import pymongo
 import csv
 import pprint
@@ -26,7 +27,7 @@ def upload_userlist():
         string = file.read().decode('utf-8')
         lines = string.split('\n')
         lines = [line.replace('\r', '') for line in lines]
-        db.userlists.insert_one({'name': file.name, 'userlist': lines})
+        db.userlists.insert_one({'name': secure_filename(file.filename), 'userlist': lines})
         return redirect(url_for('index')) 
     return 'error uploading userlist' 
 
