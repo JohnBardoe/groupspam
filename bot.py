@@ -30,7 +30,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
         client = await tdesk.ToTelethon(session="{}.session".format(account_id), flag=UseCurrentSession)
         client.proxy = settings['proxy']
         print("Loaded account " + account_id)
-        clients.append({"client": client, "added": 0, "failed": 0})
+        clients.append({"client": client, "added": 0, "failed": 0, "id": account_id})
     
     report = [ [0, 0, group] for group in groups ]
     banned_clients = []
@@ -94,12 +94,11 @@ async def main(progress_data, run_flag, accounts, tasks, groups, settings):
             continue
         finally:
             if client['added'] >= settings['maxadd'] or client['failed'] + client['added'] >= settings['maxreq']:
-                print("This account has added enough users, don't use it ", client['client'].session)
+                print("This account has added enough users, don't use it ", client['id'])
                 for i in range(len(clients)):
                     if clients[i] == client:
                         del clients[i]
                         break
-            continue
 
     print("Report:")
     for r in report:
