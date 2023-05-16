@@ -21,16 +21,16 @@ def getTasks(inout_path):
                 pass
     return tasks
 
-async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
+async def main(progress_data, run_flag, accounts, tasks, groups, settings):
     clients = []
     for account_path in accounts:
         account_id = account_path.split("/")[-1]
         tdesk = TDesktop(account_path+"/tdata")
         assert tdesk.isLoaded()
         client = await tdesk.ToTelethon(session="{}.session".format(account_id), flag=UseCurrentSession)
-        client.proxy = proxy
+        client.proxy = settings['proxy']
         print("Loaded account " + account_id)
-        clients.append(client)
+        clients.append({"client": client, "added": 0, "failed": 0})
     
     report = [ [0, 0, group] for group in groups ]
     banned_clients = []
@@ -40,15 +40,15 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
             user = task[0]
             group = task[1]
             client = random.choice(clients)
-            await client.connect()
+            await client['client'].connect()
             await asyncio.sleep(random.uniform(0, 1))
-            group_entity = await client.get_entity(group)
-            await client(JoinChannelRequest(group_entity.id))
+            group_entity = await client['client'].get_entity(group)
+            await client['client'](JoinChannelRequest(group_entity.id))
             if isinstance(group_entity, telethon.tl.types.Chat):
-                await client(AddChatUserRequest(group_entity.id, user, fwd_limit=0))
+                await client['client'](AddChatUserRequest(group_entity.id, user, fwd_limit=0))
             elif isinstance(group_entity, telethon.tl.types.Channel):
-                await client(InviteToChannelRequest(group_entity.id, [user]))
-            await client.disconnect()
+                await client['client'](InviteToChannelRequest(group_entity.id, [user]))
+            await client['client'].disconnect()
             print("Successfully added " + user + " to " + group)
             for i in range(len(report)):
                 if report[i][2] == group:
@@ -59,8 +59,10 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
                     del tasks[i]
                     break
             progress_data[group]['added'] += 1
+            client['added'] += 1
         except Exception as e:
             progress_data[group]['failed'] += 1
+            client['failed'] += 1
             for i in range(len(report)):
                 if report[i][2] == group:
                     report[i][1] += 1
@@ -69,10 +71,18 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
                 print("Too many requests, sleeping for 20 secs")
                 await asyncio.sleep(20)
                 continue
+            if "deleted/deactivated" in str(e):
+                print("This account is deleted/deactivated. Don't use it")
+                me = await client.get_entity('me')
+                banned_clients.append(me.id)
+                for i in range(len(clients)):
+                    if clients[i] == client:
+                        del clients[i]
+                        break
+                continue
             if "A wait of" in str(e):
                 print("This account is limited. Don't use it")
                 me = await client.get_entity('me')
-                banned_clients.append(me.id)
                 for i in range(len(clients)):
                     if clients[i] == client:
                         del clients[i]
@@ -82,6 +92,15 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
             print(e)
             await asyncio.sleep(random.randint(1, 3))
             continue
+        finally:
+            if client['added'] >= settings['maxadd']or client['failed'] + client['added'] >= settings['maxreq']:
+                print("This account has added enough users, don't use it ", client['client'].session)
+                for i in range(len(clients)):
+                    if clients[i] == client:
+                        del clients[i]
+                        break
+            continue
+
     print("Report:")
     for r in report:
         print("Group: {}, Success: {}, Failed: {}".format(r[2], r[0], r[1]))
@@ -89,7 +108,7 @@ async def main(progress_data, run_flag, accounts, tasks, groups, proxy):
     for client in banned_clients:
         print(client)
 
-def entry(progress_data, run_flag, tasks, groups, proxy):
+def entry(progress_data, run_flag, tasks, groups, settings):
     accounts = glob.glob("./accounts/*")
     sessions = glob.glob("*.session")
     print("Deleting " + str(len(sessions)) + " sessions")
@@ -102,4 +121,4 @@ def entry(progress_data, run_flag, tasks, groups, proxy):
     sys.stderr.reconfigure(line_buffering=True)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(progress_data, run_flag, accounts, tasks, groups, proxy))
+    loop.run_until_complete(main(progress_data, run_flag, accounts, tasks, groups, settings))

@@ -87,7 +87,8 @@ def start():
             tasks.append([user, group])
 
     proxy = {}
-    proxy_url = db.settings.find_one()['proxy_url']
+    settings_db = db.settings.find_one()
+    proxy_url = settings_db['proxy_url']
     if proxy_url != "":
         proxy_url = proxy_url.split('@')
         proxy['addr'] = proxy_url[0].split(':')[0]
@@ -99,7 +100,8 @@ def start():
     sleep(5)
     run_flag.value = True
     #clear progess data
-    p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, tasks, group_names, proxy))
+    settings = {"maxadd": settings_db['maxadd'], "maxreq": settings_db['maxreq'], "proxy": proxy}
+    p = multiprocessing.Process(target=bot.entry, args=(progress_data, run_flag, tasks, group_names, settings))
     p.start()
     return redirect(url_for('index'))
 
