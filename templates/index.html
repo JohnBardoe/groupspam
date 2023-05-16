@@ -144,16 +144,24 @@
 		fetch('/progress')
 			.then(response => response.json())
 			.then(data => {
+				// iterate through each group 
+				//update each card's subtitle with added and failed integers
 				for (var i = 0; i < data.length; i++) {
-					var group = data[i];
-					var card = document.getElementById(group.name);
-					card.getElementsByClassName('card-subtitle')[0].innerHTML = "Added: " + group.added + " Failed: " + group.failed;
+					var group = Object.keys(data[i])[0];
+					var value = data[i][key];
+					var card = document.getElementById(group);
+					var subtitle = card.getElementsByClassName('card-subtitle')[0];
+					subtitle.innerHTML = "Added: " + value['added'] + " Failed: " + value['failed'];
+
 				}
 			});
 	}, 1000);
 	// update log every 5 seconds
 	setInterval(function () {
 		fetch('/log')
-			.then(respone => document.getElementById('log').innerHTML = respone.text());
+			.then(response => response.text())
+			.then(data => {
+				document.getElementById('log').innerHTML = data;
+			});
 	}, 1000);	
 </script>
