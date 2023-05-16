@@ -56,11 +56,12 @@
   </div>
   <!-- stick to the bottom of the screen and padding on the left and right of 15px -->
   <div class="row fixed-bottom mx-3 my-3">
+<div class="col-6">
     <div class="col-3">
       <div class="card">
 	<div class="card-body">
 	<h5 class="card-title">New Group</h5>
-	<form action="/newgroup" method="post">
+	<form action="/add_group" method="post">
 	  <div class="mb-3">
 	    <label for="groupname" class="form-label">Group Name</label>
 	    <input type="text" class="form-control" id="groupname" name="groupname">
@@ -85,6 +86,12 @@
 	</div>
       </div>
     </div>
+    <div class="row">
+	<form action="/start" method="post" class="col">
+	<button type="submit" class="btn btn-success btn-lg btn-block">Start</button>
+	</form>
+	    </div>
+    </div>
     <div class="col-3">
       <div class="card">
 	<div class="card-body">
@@ -105,9 +112,6 @@
 	</div>
       </div>
     </div>
-		<form action="/start" method="post" class="col-3">
-	<button type="submit" class="btn btn-success btn-lg btn-block">Start</button>
-	</form>
   </div>
  </div>
 </body>

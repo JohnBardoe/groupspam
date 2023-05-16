@@ -42,7 +42,7 @@ def delete_group():
 
 @app.route('/add_group', methods=['POST'])
 def add_group():
-    group = request.form['group']
+    group = request.form['groupname']
     db.groups.insert_one({'name': group, 'userlist': "", 'added': 0, 'failed': 0})
     return redirect(url_for('index'))
 
