@@ -82,7 +82,7 @@ def start():
         progress_data[group] = {'added': 0, 'failed': 0}
 
         userlist_name = db.groups.find_one({'name': group})['userlist']
-        userlist =  db.userlists.find_one({'name': userlist_name})['users']
+        userlist =  db.userlists.find_one({'name': userlist_name})['userlist']
         for user in userlist:
             tasks.append([user, group])
 
