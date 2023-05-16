@@ -52,11 +52,9 @@ def add_group():
 @app.route('/set_settings', methods=['POST'])
 def set_settings():
     proxy_url = request.form['proxyurl']
-    db.settings.update_one({}, {'$set': {'proxy_url': proxy_url}}, upsert=True)
     maxreq = request.form['maxreq']
-    db.settings.update_one({}, {'$set': {'maxreq': maxreq}}, upsert=True)
     maxadd = request.form['maxadd']
-    db.settings.update_one({}, {'$set': {'maxadd': maxadd}}, upsert=True)
+    db.settings.update_one({}, {'$set': {'proxy_url': proxy_url, 'maxreq': maxreq, 'maxadd': maxadd}})
 
     return redirect(url_for('index'))
 
@@ -98,7 +96,7 @@ def log():
 def index():
     groups = db.groups.find()
     userlists = db.userlists.find()
-    settings = db.settings.find()
+    settings = db.settings.find_one()
     return render_template('index.html', groups=groups, userlists=userlists, settings=settings)
 
 if __name__ == '__main__':
