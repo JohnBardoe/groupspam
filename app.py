@@ -108,6 +108,8 @@ def log():
     log = []
     with open('botlog.out', 'r') as f:
         log = f.read().split('\n')
+    with open('botlog.err', 'r') as f:
+        log += f.read().split('\n')
     return json.dumps(log)
 
 @app.route('/progress', methods=['GET'])
