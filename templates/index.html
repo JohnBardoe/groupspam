@@ -146,13 +146,11 @@
 			.then(data => {
 				// iterate through each group 
 				//update each card's subtitle with added and failed integers
-				for (var i = 0; i < data.length; i++) {
-					var group = Object.keys(data[i])[0];
-					var value = data[i][key];
-					var card = document.getElementById(group);
+				// example response {"supergruppa00": {"added": 1, "failed": 19}}
+				for (const [key, value] of Object.entries(data)) {
+					var card = document.getElementById(key);
 					var subtitle = card.getElementsByClassName('card-subtitle')[0];
 					subtitle.innerHTML = "Added: " + value['added'] + " Failed: " + value['failed'];
-
 				}
 			});
 	}, 1000);
