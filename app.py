@@ -54,7 +54,7 @@ def set_settings():
     proxy_url = request.form['proxyurl']
     maxreq = request.form['maxreq']
     maxadd = request.form['maxadd']
-    db.settings.update_one({}, {'$set': {'proxy_url': proxy_url, 'maxreq': maxreq, 'maxadd': maxadd}})
+    db.settings.update_one({}, {'$set': {'proxy_url': proxy_url, 'maxreq': maxreq, 'maxadd': maxadd}}, upsert=True) 
 
     return redirect(url_for('index'))
 
@@ -70,7 +70,7 @@ def start():
             tasks.append([user, group])
 
     proxy = {}
-    proxy_url = db.settings.find_one({'proxy_url': {'$exists': True}})['proxy_url']
+    proxy_url = db.settings.find_one()['proxy_url']
     if proxy_url != "":
         proxy_url = proxy_url.split('@')
         proxy['addr'] = proxy_url[0].split(':')[0]
