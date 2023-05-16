@@ -34,10 +34,10 @@
 										value="{{ group['name'] }}"></input>
 									<label for="userlist" class="form-label">User list</label>
 									<select id="userlist" name="userlist" class="form-select" aria-label="User List">
-										{% for userlist in userlists %}
+						{% for userlist in userlists %}
 										<option value="{{ userlist['name'] }}" {% if userlist['name']==group['userlist'] %}
 											selected {% endif %}>{{ userlist['name'] }}</option>
-										{% endfor %}
+						{% endfor %}
 									</select>
 								</form>
 								<div class="row row-cols-2 mx-3 my-3">
